@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "memo-cache"
+version = "0.3.1"
+description = "Local static-analysis file-summary cache for AI coding assistants (Cursor, GitHub Copilot, Claude Code). Offline, no LLM API."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "TokenOptimizationPOC" }]
+keywords = ["cli", "ai", "tokens", "cache", "summary", "static-analysis"]
+
+dependencies = [
+    "click>=8.0",
+    "pathspec>=0.11",
+]
+
+[project.optional-dependencies]
+# tiktoken gives exact cl100k_base token counts in `memo show` / `memo status`.
+# It ships native (Rust) wheels that lag new Python releases and can fail to build,
+# so it must not be able to block a first install — memo/tokens.py already falls
+# back to a ~chars/4 estimate and labels it approximate. Install with:
+#     pip install -e ".[tokens]"
+tokens = ["tiktoken>=0.5"]
+# Leiden community detection over the call graph (`memo clusters`, and the `memo ui`
+# graph view's node coloring). python-igraph ships prebuilt wheels for common
+# platforms but is still a compiled C library, so — same reasoning as tiktoken above —
+# it must never be able to block a first install. memo/clusters.py already falls back
+# to directory-based grouping (what the graph view used before this existed) when it's
+# absent. Install with:
+#     pip install -e ".[graph]"
+graph = ["python-igraph>=0.11"]
+# Lexical (BM25) ranking for `memo brief`'s natural-language queries, over symbol
+# names/docstrings/comments memo's analyzers already extract. Same reasoning as
+# tiktoken/python-igraph above — a query like "where do we retry failed payments"
+# only matches today if "retry"/"failed"/"payments" literally appears in an
+# identifier, so this is a real capability gain, not a performance one, and it must
+# still not be able to block a first install. memo/lexical.py falls back to the
+# existing exact/substring name matching when it's absent. Install with:
+#     pip install -e ".[search]"
+search = ["rank-bm25>=0.2"]
+dev = ["pytest>=7.0"]
+
+# memo is invoked as `python -m memo.cli` (or `python -m memo`). This console script
+# is a convenience only: pip installs it into a user-scheme Scripts directory that is
+# often absent from PATH on Windows, so no docs or rule files depend on it.
+[project.scripts]
+memo = "memo.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["memo*"]

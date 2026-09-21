@@ -1,0 +1,15 @@
+# memo's own index — derived, rebuilt by `cache-dir`, never shared
+.memo/
+
+# Python build and cache artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+.venv/
+venv/
+
+# Per-machine Claude Code permission grants — not shared state
+.claude/settings.local.json

@@ -1,0 +1,9 @@
+# Pin LF in the working tree, not just the index.
+#
+# memo writes its generated rule files with newline="\n" on every platform
+# (see _apply in memo/cli.py) so that re-running `memo init` on Windows does
+# not surface as a diff for teammates on Linux. With core.autocrlf=true the
+# working tree would be smudged to CRLF on checkout and init's LF output
+# would then rewrite every managed block. eol=lf keeps both sides LF
+# regardless of each developer's autocrlf setting.
+* text=auto eol=lf

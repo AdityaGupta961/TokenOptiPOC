@@ -1,0 +1,60 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf 'CRITICAL - Code Discovery Protocol for this repo:\\n1. ALWAYS use the memo skill or `python -m memo.cli <cmd>` FIRST for any question spanning files or relationships: callers, impact/blast-radius, trace, test coverage, map, find, architecture.\\n2. Use Read/Grep/Glob freely for a single already-known file, configs, or non-code text.\\n3. Full command table: AGENTS.md or `python -m memo.cli guide`.\\n'"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ": MEMO_MANAGED_HOOK_V1\nprintf 'CRITICAL - Code Discovery Protocol for this repo:\\n1. ALWAYS use `python -m memo.cli <cmd>` FIRST for any question spanning files or relationships: callers, impact/blast-radius, trace, test coverage, map, find, architecture, or \"how does X work\".\\n2. Use Read/Grep/Glob freely for a single already-known file, configs, or non-code text.\\n3. Full command table: AGENTS.md or `python -m memo.cli guide`.\\n'"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.path // \".\"' | { read -r p; if [ \"$p\" = \".\" ]; then printf '%s' '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"Repo-wide search detected. This repo has a memo code-intelligence index \\u2014 `python -m memo.cli map/find/callers/brief` may answer this from the index without scanning files. See AGENTS.md.\"}}'; fi; }"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command // \"\"' | { read -r cmd; case \"$cmd\" in *grep*-r*|*grep*-R*) printf '%s' '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"Repo-wide search detected. This repo has a memo code-intelligence index \\u2014 `python -m memo.cli map/find/callers/brief` may answer this from the index without scanning files. See AGENTS.md.\"}}';; esac; }"
+          }
+        ]
+      },
+      {
+        "matcher": "Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ": MEMO_MANAGED_HOOK_V1\njq -r '.tool_input.path // \".\"' | { read -r p; if [ \"$p\" = \".\" ]; then printf %s '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"Repo-wide search detected. This repo has a memo code-intelligence index \\u2014 `python -m memo.cli map/find/callers/brief` may answer this from the index without scanning files. See AGENTS.md.\"}}'; fi; }"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ": MEMO_MANAGED_HOOK_V1\njq -r '.tool_input.command // \"\"' | { read -r cmd; case \"$cmd\" in *grep*-r*|*grep*-R*) printf %s '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"Repo-wide search detected. This repo has a memo code-intelligence index \\u2014 `python -m memo.cli map/find/callers/brief` may answer this from the index without scanning files. See AGENTS.md.\"}}';; esac; }"
+          }
+        ]
+      }
+    ]
+  }
+}
